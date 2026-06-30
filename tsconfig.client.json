@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "outDir": "./dist/client",
+    "lib": ["DOM", "DOM.Iterable", "ES2022", "WebWorker"],
+  },
+  "include": ["src/client/**/*", "src/sw/**/*", "src/types.ts"],
+}

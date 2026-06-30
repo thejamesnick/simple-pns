@@ -1,0 +1,76 @@
+{
+  "name": "simple-pns",
+  "version": "1.0.0",
+  "private": false,
+  "description": "SimplePNS — A cross-runtime push notification system for Node.js, edge, and the browser. VAPID auth, dead-subscription cleanup, bulk sending, serverless support, and a full demo rig.",
+  "keywords": [
+    "push notifications",
+    "web push",
+    "vapid",
+    "pwa",
+    "service worker",
+    "notifications",
+    "typescript"
+  ],
+  "homepage": "https://github.com/thejamesnick/pns#readme",
+  "bugs": {
+    "url": "https://github.com/thejamesnick/pns/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thejamesnick/pns.git"
+  },
+  "license": "MIT",
+  "author": "thejamesnick (https://github.com/thejamesnick)",
+  "main": "dist/server/src/server/index.js",
+  "types": "dist/server/src/server/index.d.ts",
+  "browser": "dist/client/client/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/server/src/server/index.d.ts",
+      "require": "./dist/server/src/server/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/client/index.d.ts",
+      "import": "./dist/client/client/index.js"
+    },
+    "./edge": {
+      "types": "./dist/server/src/edge/index.d.ts",
+      "require": "./dist/server/src/edge/index.js",
+      "import": "./dist/server/src/edge/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build:server": "tsc -p tsconfig.server.json",
+    "build:client": "tsc -p tsconfig.client.json",
+    "build": "npm run build:server && npm run build:client",
+    "clean": "rm -rf dist/",
+    "generate-keys": "node dist/server/bin/generate-keys.js",
+    "demo": "ts-node demo/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "@types/web-push": "^3.6.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2",
+    "vitest": "^4.1.9"
+  }
+}

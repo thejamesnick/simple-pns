@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PNS · Demo</title>
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>"
+        />
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --accent: #0071e3;
+                --accent-hover: #0077ed;
+                --accent-active: #006edb;
+                --danger: #ff3b30;
+                --success: #34c759;
+                --warning: #ff9f0a;
+                --gray-50: #f5f5f7;
+                --gray-100: #e8e8ed;
+                --gray-200: #d2d2d7;
+                --gray-400: #86868b;
+                --gray-600: #6e6e73;
+                --gray-800: #1d1d1f;
+                --gray-900: #0a0a0b;
+                --radius: 12px;
+                --radius-sm: 8px;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                    "Helvetica Neue", Helvetica, Arial, sans-serif;
+                background: var(--gray-900);
+                color: var(--gray-50);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                padding: 20px;
+            }
+
+            .card {
+                background: var(--gray-800);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: var(--radius);
+                padding: 40px;
+                width: 100%;
+                max-width: 460px;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            }
+
+            .card-header {
+                text-align: center;
+                margin-bottom: 32px;
+            }
+
+            .card-header .icon {
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+
+            .card-header h1 {
+                font-size: 22px;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                margin-bottom: 4px;
+            }
+
+            .card-header p {
+                color: var(--gray-400);
+                font-size: 14px;
+                font-weight: 400;
+            }
+
+            .status-bar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 16px;
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: var(--radius-sm);
+                margin-bottom: 20px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+                background: var(--gray-400);
+                transition: background 0.3s ease;
+            }
+
+            .status-dot.granted {
+                background: var(--success);
+            }
+            .status-dot.denied {
+                background: var(--danger);
+            }
+            .status-dot.default {
+                background: var(--warning);
+            }
+
+            .status-text {
+                flex: 1;
+                color: var(--gray-200);
+            }
+
+            .status-meta {
+                color: var(--gray-400);
+                font-size: 11px;
+                font-weight: 400;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+                padding: 13px 24px;
+                border: none;
+                border-radius: var(--radius-sm);
+                font-size: 15px;
+                font-weight: 600;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+
+            .btn:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            .btn-primary {
+                background: var(--accent);
+                color: white;
+            }
+            .btn-primary:hover:not(:disabled) {
+                background: var(--accent-hover);
+            }
+            .btn-primary:active:not(:disabled) {
+                background: var(--accent-active);
+            }
+
+            .btn-secondary {
+                background: rgba(255, 255, 255, 0.08);
+                color: var(--gray-50);
+            }
+            .btn-secondary:hover:not(:disabled) {
+                background: rgba(255, 255, 255, 0.12);
+            }
+            .btn-secondary:active:not(:disabled) {
+                background: rgba(255, 255, 255, 0.16);
+            }
+
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .log {
+                margin-top: 20px;
+                padding: 12px 16px;
+                background: rgba(0, 0, 0, 0.3);
+                border-radius: var(--radius-sm);
+                font-family:
+                    "SF Mono", "Cascadia Code", "JetBrains Mono", monospace;
+                font-size: 12px;
+                line-height: 1.6;
+                color: var(--gray-400);
+                min-height: 48px;
+                max-height: 160px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .log .log-entry.success {
+                color: var(--success);
+            }
+            .log .log-entry.error {
+                color: var(--danger);
+            }
+            .log .log-entry.info {
+                color: var(--accent);
+            }
+
+            .stats {
+                display: flex;
+                gap: 16px;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .stat {
+                flex: 1;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+
+            .stat-label {
+                font-size: 11px;
+                color: var(--gray-400);
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                margin-top: 2px;
+            }
+
+            .toast {
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(80px);
+                background: var(--gray-800);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: var(--radius-sm);
+                padding: 12px 20px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--gray-50);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+                opacity: 0;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                pointer-events: none;
+                z-index: 100;
+            }
+
+            .toast.visible {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .toast.error {
+                border-color: var(--danger);
+            }
+            .toast.success {
+                border-color: var(--success);
+            }
+
+            .spinner {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                border: 2px solid rgba(255, 255, 255, 0.15);
+                border-top-color: white;
+                border-radius: 50%;
+                animation: spin 0.6s linear infinite;
+                vertical-align: middle;
+                margin-right: 8px;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">🔔</div>
+                <h1>Push Notification System</h1>
+                <p>Demo test rig — validate your PNS setup</p>
+            </div>
+
+            <div class="status-bar">
+                <span class="status-dot" id="statusDot"></span>
+                <span class="status-text" id="statusText"
+                    >Checking support…</span
+                >
+                <span class="status-meta" id="statusMeta"></span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btnSubscribe" disabled>
+                    Enable Notifications
+                </button>
+                <button class="btn btn-secondary" id="btnNotify" disabled>
+                    Send Test Notification
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    id="btnUnsubscribe"
+                    disabled
+                    style="display: none"
+                >
+                    Unsubscribe
+                </button>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="statStatus">—</div>
+                    <div class="stat-label">Permission</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statSubscribed">—</div>
+                    <div class="stat-label">Subscribed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statSent">0</div>
+                    <div class="stat-label">Sent</div>
+                </div>
+            </div>
+
+            <div class="log" id="log">
+                <span class="log-entry info">⏳ Initializing…</span>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <script>
+            // ──────────────────────────────────────────
+            //  PNS Demo Frontend
+            //  Zero dependencies. Pure vanilla JS.
+            // ──────────────────────────────────────────
+
+            class DemoApp {
+                constructor() {
+                    this.publicVapidKey = null;
+                    this.subscription = null;
+
+                    this.el = {
+                        statusDot: document.getElementById("statusDot"),
+                        statusText: document.getElementById("statusText"),
+                        statusMeta: document.getElementById("statusMeta"),
+                        btnSubscribe: document.getElementById("btnSubscribe"),
+                        btnNotify: document.getElementById("btnNotify"),
+                        btnUnsubscribe:
+                            document.getElementById("btnUnsubscribe"),
+                        statStatus: document.getElementById("statStatus"),
+                        statSubscribed:
+                            document.getElementById("statSubscribed"),
+                        statSent: document.getElementById("statSent"),
+                        log: document.getElementById("log"),
+                        toast: document.getElementById("toast"),
+                    };
+                }
+
+                async init() {
+                    this.log("info", "🔍 Checking browser support…");
+
+                    if (
+                        !("serviceWorker" in navigator) ||
+                        !("PushManager" in window)
+                    ) {
+                        this.setStatus(
+                            "error",
+                            "Push not supported on this browser.",
+                        );
+                        this.el.btnSubscribe.disabled = true;
+                        this.log("error", "❌ Push API not available.");
+                        return;
+                    }
+
+                    // Fetch VAPID public key from server
+                    try {
+                        const res = await fetch("/api/config");
+                        const config = await res.json();
+                        this.publicVapidKey = config.publicVapidKey;
+                        this.log("info", "🔑 VAPID key loaded from server.");
+                    } catch {
+                        this.log("error", "⚠️  Could not fetch server config.");
+                        return;
+                    }
+
+                    // Check for existing subscription
+                    try {
+                        const reg = await navigator.serviceWorker.ready;
+                        const sub = await reg.pushManager.getSubscription();
+                        if (sub) {
+                            this.subscription = sub.toJSON();
+                            this.onSubscribed();
+                            this.log("info", "📋 Found existing subscription.");
+                        } else {
+                            this.onUnsubscribed();
+                        }
+                    } catch {
+                        this.onUnsubscribed();
+                    }
+
+                    this.updatePermissionUI();
+                    this.bindEvents();
+                }
+
+                // ── Permission UI ──
+
+                updatePermissionUI() {
+                    const state = Notification.permission;
+                    this.el.statStatus.textContent = state;
+
+                    switch (state) {
+                        case "granted":
+                            this.el.statusDot.className = "status-dot granted";
+                            this.el.statusText.textContent = this.subscription
+                                ? "Subscribed & ready"
+                                : "Permission granted — subscribe to start";
+                            this.el.btnSubscribe.disabled = false;
+                            break;
+                        case "denied":
+                            this.el.statusDot.className = "status-dot denied";
+                            this.el.statusText.textContent =
+                                "Permission denied. Update browser settings.";
+                            this.el.btnSubscribe.disabled = true;
+                            break;
+                        default:
+                            this.el.statusDot.className = "status-dot default";
+                            this.el.statusText.textContent =
+                                "Notifications not yet enabled";
+                            this.el.btnSubscribe.disabled = false;
+                            break;
+                    }
+                }
+
+                // ── Subscribe ──
+
+                async handleSubscribe() {
+                    if (!this.publicVapidKey) {
+                        this.showToast(
+                            "Server VAPID key not configured.",
+                            "error",
+                        );
+                        return;
+                    }
+
+                    this.el.btnSubscribe.disabled = true;
+                    this.el.btnSubscribe.innerHTML =
+                        '<span class="spinner"></span>Subscribing…';
+
+                    try {
+                        const result = await this.subscribeBrowser();
+
+                        if (result.success && result.subscription) {
+                            this.subscription = result.subscription;
+
+                            const res = await fetch("/api/subscribe", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(result.subscription),
+                            });
+                            const data = await res.json();
+
+                            this.onSubscribed();
+                            this.showToast(
+                                "✅ Subscribed successfully!",
+                                "success",
+                            );
+                            this.log(
+                                "success",
+                                `✅ Subscribed — ${data.total} total on server`,
+                            );
+                        } else {
+                            this.showToast(
+                                result.error || "Subscription failed.",
+                                "error",
+                            );
+                            this.log("error", `❌ ${result.error}`);
+                            this.el.btnSubscribe.disabled = false;
+                        }
+                    } catch (err) {
+                        this.showToast(
+                            "Subscription error. Check console.",
+                            "error",
+                        );
+                        this.log("error", `❌ ${err.message}`);
+                        this.el.btnSubscribe.disabled = false;
+                    }
+
+                    this.el.btnSubscribe.textContent = "Enable Notifications";
+                }
+
+                async subscribeBrowser() {
+                    try {
+                        const registration =
+                            await navigator.serviceWorker.register("/sw.js");
+                        await registration.update();
+
+                        const permission =
+                            await Notification.requestPermission();
+                        if (permission !== "granted") {
+                            return {
+                                success: false,
+                                error:
+                                    permission === "denied"
+                                        ? "Permission was denied."
+                                        : "Permission was dismissed.",
+                            };
+                        }
+
+                        const subscription =
+                            await registration.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey:
+                                    this.urlBase64ToUint8Array(
+                                        this.publicVapidKey,
+                                    ),
+                            });
+
+                        return {
+                            success: true,
+                            subscription: subscription.toJSON(),
+                        };
+                    } catch (error) {
+                        return {
+                            success: false,
+                            error:
+                                error instanceof Error
+                                    ? error.message
+                                    : "Unknown error.",
+                        };
+                    }
+                }
+
+                // ── Unsubscribe ──
+
+                async handleUnsubscribe() {
+                    this.el.btnUnsubscribe.disabled = true;
+
+                    try {
+                        const reg = await navigator.serviceWorker.ready;
+                        const sub = await reg.pushManager.getSubscription();
+                        if (sub) await sub.unsubscribe();
+
+                        await fetch("/api/unsubscribe", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                endpoint: this.subscription?.endpoint,
+                            }),
+                        });
+
+                        this.subscription = null;
+                        this.onUnsubscribed();
+                        this.showToast("Unsubscribed.", "success");
+                        this.log("info", "🔕 Unsubscribed successfully.");
+                    } catch (err) {
+                        this.showToast("Failed to unsubscribe.", "error");
+                        this.log("error", `❌ ${err.message}`);
+                    }
+
+                    this.el.btnUnsubscribe.disabled = false;
+                }
+
+                // ── Notify ──
+
+                async handleNotify() {
+                    this.el.btnNotify.disabled = true;
+                    this.el.btnNotify.innerHTML =
+                        '<span class="spinner"></span>Sending…';
+
+                    try {
+                        const res = await fetch("/api/notify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                title: "Hello from PNS!",
+                                body: `Test notification sent at ${new Date().toLocaleTimeString()}`,
+                            }),
+                        });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            this.el.statSent.textContent =
+                                parseInt(this.el.statSent.textContent) +
+                                data.sent;
+                            this.showToast(
+                                `📨 ${data.sent} sent, ${data.cleaned} cleaned`,
+                                "success",
+                            );
+                            this.log(
+                                "success",
+                                `📨 ${data.sent} sent | ${data.failed} failed | ${data.cleaned} cleaned`,
+                            );
+                        }
+                    } catch (err) {
+                        this.showToast("Failed to send notification.", "error");
+                        this.log("error", `❌ ${err.message}`);
+                    }
+
+                    this.el.btnNotify.textContent = "Send Test Notification";
+                    this.el.btnNotify.disabled = false;
+                }
+
+                // ── UI Helpers ──
+
+                onSubscribed() {
+                    this.el.statSubscribed.textContent = "Yes";
+                    this.el.statSubscribed.style.color = "var(--success)";
+                    this.el.btnSubscribe.textContent = "Subscribed ✓";
+                    this.el.btnSubscribe.disabled = true;
+                    this.el.btnUnsubscribe.style.display = "block";
+                    this.el.btnNotify.disabled = false;
+                    this.updatePermissionUI();
+                }
+
+                onUnsubscribed() {
+                    this.el.statSubscribed.textContent = "No";
+                    this.el.statSubscribed.style.color = "var(--gray-400)";
+                    this.el.btnSubscribe.textContent = "Enable Notifications";
+                    this.el.btnSubscribe.disabled = false;
+                    this.el.btnUnsubscribe.style.display = "none";
+                    this.el.btnNotify.disabled = true;
+                    this.updatePermissionUI();
+                }
+
+                setStatus(type, message) {
+                    this.el.statusDot.className = "status-dot " + type;
+                    this.el.statusText.textContent = message;
+                }
+
+                showToast(message, type = "info") {
+                    const toast = this.el.toast;
+                    toast.className = "toast " + type;
+                    toast.textContent = message;
+                    toast.classList.add("visible");
+                    clearTimeout(this._toastTimer);
+                    this._toastTimer = setTimeout(
+                        () => toast.classList.remove("visible"),
+                        3000,
+                    );
+                }
+
+                log(type, message) {
+                    const entry = document.createElement("div");
+                    entry.className = "log-entry " + type;
+                    entry.textContent = message;
+                    this.el.log.appendChild(entry);
+                    this.el.log.scrollTop = this.el.log.scrollHeight;
+                }
+
+                urlBase64ToUint8Array(base64String) {
+                    const padding = "=".repeat(
+                        (4 - (base64String.length % 4)) % 4,
+                    );
+                    const base64 = (base64String + padding)
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/");
+                    const rawData = atob(base64);
+                    const output = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; i++) {
+                        output[i] = rawData.charCodeAt(i);
+                    }
+                    return output;
+                }
+
+                bindEvents() {
+                    this.el.btnSubscribe.addEventListener("click", () =>
+                        this.handleSubscribe(),
+                    );
+                    this.el.btnNotify.addEventListener("click", () =>
+                        this.handleNotify(),
+                    );
+                    this.el.btnUnsubscribe.addEventListener("click", () =>
+                        this.handleUnsubscribe(),
+                    );
+                }
+            }
+
+            const app = new DemoApp();
+            app.init();
+        </script>
+    </body>
+</html>

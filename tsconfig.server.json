@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./dist/server",
+    "lib": ["es2022"],
+  },
+  "include": ["src/server/**/*", "src/edge/**/*", "src/types.ts", "bin/**/*"],
+}

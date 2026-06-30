@@ -1,0 +1,81 @@
+version: "3.9"
+
+# PNS Full Stack
+# ──────────────────
+# Start:   docker compose up -d
+# Stop:    docker compose down
+# Logs:    docker compose logs -f
+#
+# Access:  http://localhost:3000
+
+services:
+  # ── Demo Application ─────────────────
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PUBLIC_VAPID_KEY=${PUBLIC_VAPID_KEY}
+      - PRIVATE_VAPID_KEY=${PRIVATE_VAPID_KEY}
+      - VAPID_CONTACT=mailto:admin@example.com
+      - DEMO_PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://pns:pns@postgres:5432/pns
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Message Queue (Redis) ────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # ── Database (PostgreSQL) ────────────
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pns
+      POSTGRES_PASSWORD: pns
+      POSTGRES_DB: pns
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pns"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Background Worker ────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["npx", "ts-node", "examples/queue/worker.ts"]
+    environment:
+      - PUBLIC_VAPID_KEY=${PUBLIC_VAPID_KEY}
+      - PRIVATE_VAPID_KEY=${PRIVATE_VAPID_KEY}
+      - VAPID_CONTACT=mailto:admin@example.com
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://pns:pns@postgres:5432/pns
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
