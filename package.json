@@ -12,13 +12,13 @@
     "notifications",
     "typescript"
   ],
-  "homepage": "https://github.com/thejamesnick/pns#readme",
+  "homepage": "https://github.com/thejamesnick/simple-pns#readme",
   "bugs": {
-    "url": "https://github.com/thejamesnick/pns/issues"
+    "url": "https://github.com/thejamesnick/simple-pns/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thejamesnick/pns.git"
+    "url": "git+https://github.com/thejamesnick/simple-pns.git"
   },
   "license": "MIT",
   "author": "thejamesnick (https://github.com/thejamesnick)",
